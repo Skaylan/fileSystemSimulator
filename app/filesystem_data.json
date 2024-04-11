@@ -1,0 +1,193 @@
+{
+    "root": {
+        "name": "/",
+        "is_directory": true,
+        "children": [
+            {
+                "name": "main.py",
+                "is_directory": false,
+                "children": []
+            },
+            {
+                "name": "a",
+                "is_directory": true,
+                "children": [
+                    {
+                        "name": "b",
+                        "is_directory": true,
+                        "children": [
+                            {
+                                "name": "teste.txt",
+                                "is_directory": false,
+                                "children": []
+                            },
+                            {
+                                "name": "c",
+                                "is_directory": true,
+                                "children": [
+                                    {
+                                        "name": "d",
+                                        "is_directory": true,
+                                        "children": [
+                                            {
+                                                "name": "e",
+                                                "is_directory": true,
+                                                "children": []
+                                            },
+                                            {
+                                                "name": "file.txt",
+                                                "is_directory": false,
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "folder_test",
+                                "is_directory": true,
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "folder1",
+                "is_directory": true,
+                "children": [
+                    {
+                        "name": "subfolder1",
+                        "is_directory": true,
+                        "children": [
+                            {
+                                "name": "data1.txt",
+                                "is_directory": false,
+                                "children": []
+                            },
+                            {
+                                "name": "data2.txt",
+                                "is_directory": false,
+                                "children": []
+                            },
+                            {
+                                "name": "subsubfolder1",
+                                "is_directory": true,
+                                "children": [
+                                    {
+                                        "name": "info1.txt",
+                                        "is_directory": false,
+                                        "children": []
+                                    },
+                                    {
+                                        "name": "info2.txt",
+                                        "is_directory": false,
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "subfolder2",
+                        "is_directory": true,
+                        "children": [
+                            {
+                                "name": "data3.txt",
+                                "is_directory": false,
+                                "children": []
+                            },
+                            {
+                                "name": "data4.txt",
+                                "is_directory": false,
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "subfolder3",
+                        "is_directory": true,
+                        "children": [
+                            {
+                                "name": "data5.txt",
+                                "is_directory": false,
+                                "children": []
+                            },
+                            {
+                                "name": "data6.txt",
+                                "is_directory": false,
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "folder2",
+                "is_directory": true,
+                "children": [
+                    {
+                        "name": "subfolder4",
+                        "is_directory": true,
+                        "children": [
+                            {
+                                "name": "data7.txt",
+                                "is_directory": false,
+                                "children": []
+                            },
+                            {
+                                "name": "data8.txt",
+                                "is_directory": false,
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "subfolder5",
+                        "is_directory": true,
+                        "children": [
+                            {
+                                "name": "data9.txt",
+                                "is_directory": false,
+                                "children": []
+                            },
+                            {
+                                "name": "data10.txt",
+                                "is_directory": false,
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "subfolder6",
+                        "is_directory": true,
+                        "children": [
+                            {
+                                "name": "data11.txt",
+                                "is_directory": false,
+                                "children": []
+                            },
+                            {
+                                "name": "data12.txt",
+                                "is_directory": false,
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "pasta_teste",
+                "is_directory": true,
+                "children": [
+                    {
+                        "name": "arquivo.txt",
+                        "is_directory": false,
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    },
+    "current_path": "//"
+}

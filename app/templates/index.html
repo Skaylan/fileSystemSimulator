@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <title>File Sistem Simulator</title>
+</head>
+<body>
+    
+
+    <main class="main">
+        <section class="display">
+            <ul id="terminal-display"></ul>
+        </section>
+        <section class="terminal">
+            <input type="text" name="terminal-input" id="terminal-input">
+        </section>
+    </main>
+
+    
+    <script type="text/javascript" charset="utf-8">
+        function generateHierarchicalTree(data) {
+            // Função auxiliar para encontrar o nó pai de um item
+            function findParent(parentId, items) {
+               return items.find(item => item.id === parentId);
+            }
+           
+            // Função auxiliar para construir a árvore
+            function buildTree(items, parentId = 0) {
+               const tree = document.createElement('ul');
+               items.filter(item => item.parent === parentId).forEach(item => {
+                 const li = document.createElement('li');
+                 li.textContent = item.folder_name || item.file_name;
+                 const children = buildTree(items, item.id);
+                 if (children.children.length > 0) {
+                   li.appendChild(children);
+                 }
+                 tree.appendChild(li);
+               });
+               return tree;
+            }
+           
+            // Construir a árvore a partir dos dados
+            const allItems = [...data.folder, ...data.file].map((item, index) => ({
+               ...item,
+               id: index + 1, // Atribuir um ID único para cada item
+            }));
+            return buildTree(allItems);
+           }
+
+        const socket = io();
+        socket.on('connect', function() {
+            socket.emit('message', 'Conectando...');
+        });
+
+        socket.on('terminalOutput', function(message) {
+            console.log(message);
+            const tree = generateHierarchicalTree(message);
+            console.log(tree);
+            document.getElementById('terminal-display').appendChild(tree);
+
+        });
+
+
+        const terminalInput = document.querySelector('#terminal-input');
+
+
+        terminalInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                if (terminalInput.value.length === '') {
+                    return;
+                }
+
+                socket.emit('terminalInput', terminalInput.value);
+                terminalInput.value = '';
+            }
+        });
+
+    </script>
+</body>
+</html>

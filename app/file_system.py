@@ -7,7 +7,7 @@ class Node:
         self.is_directory = is_directory
         self.children = []
         self.parent = None
-        self.previous_node = None  # Adicionando o atributo previous_node
+        self.previous_node = None
         
 
     def add_child(self, node):
@@ -18,19 +18,20 @@ class FileSystem:
     def __init__(self):
         self.root = Node("/", is_directory=True)
         self.current_node = self.root
+        self.dicio = {"folder": [], "file": []}
+        self.count = 0
 
     def cd(self, directory_path):
         if directory_path == "..":
             if self.current_node != self.root:
                 self.previous_node = self.current_node
                 self.current_node = self.current_node.parent
-        elif directory_path == "-":  # Implementação do comando cd -
+        elif directory_path == "-":
             if self.previous_node:
                 self.current_node, self.previous_node = self.previous_node, self.current_node
             else:
                 print("Não há diretório anterior.")
         else:
-            # Restante da lógica permanece igual
             if directory_path.startswith("/"):
                 current_node = self.root
                 directory_names = directory_path.split("/")
@@ -57,14 +58,18 @@ class FileSystem:
                     print(f"Diretório '{directory_path}' não encontrado.")
 
     def ls(self):
+        # dicio = {"folder": [], "file": []}
         if self.current_node is not None:
             for child in self.current_node.children:
                 if child.is_directory:
-                    print("📁", child.name)  # Emoji de pasta
+                    # dicio['folder'].append(child.name)
+                    print("📁", child.name)
                 else:
-                    print("📄", child.name)  # Emoji de arquivo
+                    # dicio['file'].append(child.name)
+                    print("📄", child.name)
         else:
             print("Diretório não encontrado ou não especificado.")
+        # return dicio
 
     # def mkdir(self, directory_name):
     #     new_directory = Node(directory_name, is_directory=True)
@@ -72,7 +77,7 @@ class FileSystem:
     def mkdir(self, directory_name):
         new_directory = Node(directory_name, is_directory=True)
         self.current_node.add_child(new_directory)
-        self.save_to_json()  # Salvando a estrutura após a criação do diretório
+        self.save_to_json() 
         print(f"Diretório '{directory_name}' criado com sucesso.")
 
     # def touch(self, file_name):
@@ -81,16 +86,15 @@ class FileSystem:
     def touch(self, file_name):
         new_file = Node(file_name)
         self.current_node.add_child(new_file)
-        self.save_to_json()  # Salvando a estrutura após a criação do arquivo
+        self.save_to_json() 
         print(f"Arquivo '{file_name}' criado com sucesso.")
 
     def get_parent_directory(self, node):
-        # Função auxiliar para obter o diretório pai de um nó
+        
         parent_path = os.path.abspath(os.path.join(node.name, os.pardir))
         return self.find_child_directory(self.root, os.path.basename(parent_path))
 
     def find_child_directory(self, current_node, directory_name):
-        # Função auxiliar para encontrar um diretório filho com o nome dado (de forma recursiva)
         if current_node.is_directory and current_node.name == directory_name:
             return current_node
         for child in current_node.children:
@@ -117,7 +121,6 @@ class FileSystem:
             print("Arquivo ou diretório não encontrado.")
 
     def find_child_node(self, current_node, target_name):
-        # Função auxiliar para encontrar um nó com o nome dado (de forma recursiva)
         if current_node.name == target_name:
             return current_node
         for child in current_node.children:
@@ -130,6 +133,7 @@ class FileSystem:
         return None
     
     def tree(self, node=None, indent="", path=""):
+        
         if node is None:
             node = self.current_node
             path = node.name
@@ -137,10 +141,16 @@ class FileSystem:
         for child in node.children:
             if child.is_directory:
                 print(indent + "|-" + child.name + "📁")
+                # self.dicio['folder'].append({"folder_name": child.name + "📁", 'count': self.count})
+                # self.count += 1
                 self.tree(child, indent + "   ", os.path.join(path, child.name))
             else:
                 print(indent + "|-" + child.name + '📄')
-
+                # self.dicio['file'].append({"file_name": child.name + '📄', 'count': self.count})
+                # self.count += 1
+        # print(self.dicio)
+        return self.dicio
+   
     def serialize_node(self, node):
         serialized_node = {
             "name": node.name,
@@ -167,12 +177,12 @@ class FileSystem:
             json.dump(data, f, indent=4)
         print("Dados salvos com sucesso.")
 
-    def load_from_json(self):
+    def load_from_json(self, path_to_file: str = "filesystem_data.json") -> None:
         try:
-            with open("filesystem_data.json", "r") as f:
+            with open(path_to_file, "r") as f:
                 data = json.load(f)
                 self.root = self.deserialize_node(data["root"])
-                self.cd(data["current_path"])
+                self.cd('/')
                 print("Dados carregados com sucesso.")
         except FileNotFoundError:
             print("Arquivo JSON não encontrado.")
@@ -188,9 +198,9 @@ class FileSystem:
         return "/" + "/".join(path)
     
     def clear_terminal(self):
-        if os.name == 'posix':  # Sistema operacional Unix-like (Linux, macOS, etc.)
+        if os.name == 'posix': 
             os.system('clear')
-        elif os.name == 'nt':  # Windows
+        elif os.name == 'nt': 
             os.system('cls')
         else:
             print("Comando de limpeza de terminal não suportado para este sistema operacional.")
@@ -201,7 +211,7 @@ class FileSystem:
             while True:
                 current_path = self.current_node.name
                 if current_path != "/":
-                    current_path = current_path[1:]  # Remover o primeiro "/" do caminho
+                    current_path = current_path[1:]
                 current_path = current_path.replace("/", os.path.sep) + "$ "
 
                 command = input(current_path)
