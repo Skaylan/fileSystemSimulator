@@ -35,11 +35,6 @@
                                                 "children": []
                                             }
                                         ]
-                                    },
-                                    {
-                                        "name": "teste.txt",
-                                        "is_directory": false,
-                                        "children": []
                                     }
                                 ]
                             },
@@ -196,6 +191,11 @@
                         "children": []
                     }
                 ]
+            },
+            {
+                "name": "teste.txt",
+                "is_directory": false,
+                "children": []
             }
         ]
     },

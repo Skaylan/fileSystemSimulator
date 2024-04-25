@@ -1,5 +1,7 @@
 import os
 import json
+from fileSystem.utils import menu
+from typing import Any
 
 class Node:
     def __init__(self, name, is_directory=False):
@@ -11,7 +13,7 @@ class Node:
         self.content = None
         
 
-    def add_child(self, node):
+    def add_child(self, node) -> None:
         self.children.append(node)
         node.parent = self
 
@@ -19,9 +21,9 @@ class FileSystem:
     def __init__(self):
         self.root = Node("/", is_directory=True)
         self.current_node = self.root
-        self.username = "lucas"
+        self.username = "skaylan"
 
-    def cd(self, directory_path):
+    def cd(self, directory_path: str) -> None:
         if directory_path == "..":
             if self.current_node != self.root:
                 self.previous_node = self.current_node
@@ -86,7 +88,7 @@ class FileSystem:
     def mkdir(self, directory_name):
         new_directory = Node(directory_name, is_directory=True)
         self.current_node.add_child(new_directory)
-        self.save_to_json()  # Salvando a estrutura após a criação do diretório
+        self.save_to_json()
         print(f"Diretório '{directory_name}' criado com sucesso.")
 
 
@@ -97,11 +99,10 @@ class FileSystem:
         print(f"Arquivo '{file_name}' criado com sucesso.")
 
     def get_parent_directory(self, node):
-        # Função auxiliar para obter o diretório pai de um nó
         parent_path = os.path.abspath(os.path.join(node.name, os.pardir))
         return self.find_child_directory(self.root, os.path.basename(parent_path))
 
-    def find_child_directory(self, current_node, directory_name):
+    def find_child_directory(self, current_node: Node, directory_name:str) -> Node | None:
         
         if current_node.is_directory and current_node.name == directory_name:
             return current_node
@@ -112,7 +113,7 @@ class FileSystem:
                     return result
         return None
     
-    def rm(self, target_name):
+    def rm(self, target_name: str):
         target_node = self.find_child_node(self.current_node, target_name)
         if target_node:
             if target_node.is_directory:
@@ -128,7 +129,7 @@ class FileSystem:
         else:
             print("Arquivo ou diretório não encontrado.")
 
-    def find_child_node(self, current_node, target_name):
+    def find_child_node(self, current_node: Node, target_name: str) -> Node | None:
         
         if current_node.name == target_name:
             return current_node
@@ -141,7 +142,7 @@ class FileSystem:
                 return child
         return None
     
-    def tree(self, node=None, indent="", path=""):
+    def tree(self, node: Node=None, indent: str="", path: str="") -> None:
         if node is None:
             node = self.current_node
             path = node.name
@@ -153,7 +154,7 @@ class FileSystem:
             else:
                 print(indent + "|-" + child.name + '📄')
 
-    def serialize_node(self, node):
+    def serialize_node(self, node) -> dict[str, Any]:
         serialized_node = {
             "name": node.name,
             "is_directory": node.is_directory,
@@ -163,14 +164,14 @@ class FileSystem:
             serialized_node["children"].append(self.serialize_node(child))
         return serialized_node
 
-    def deserialize_node(self, data):
+    def deserialize_node(self, data: dict) -> Node:
         node = Node(data["name"], is_directory=data["is_directory"])
         for child_data in data["children"]:
             child_node = self.deserialize_node(child_data)
             node.add_child(child_node)
         return node
     
-    def save_to_json(self):
+    def save_to_json(self) -> None:
         data = {
             "root": self.serialize_node(self.root),
             "current_path": self.get_current_path()
@@ -179,19 +180,19 @@ class FileSystem:
             json.dump(data, f, indent=4)
         print("Dados salvos com sucesso.")
 
-    def load_from_json(self):
+    def load_from_json(self) -> None:
         try:
             with open("filesystem_data.json", "r") as f:
                 data = json.load(f)
                 self.root = self.deserialize_node(data["root"])
-                self.cd(data["current_path"])
+                self.cd('/')
                 print("Dados carregados com sucesso.")
         except FileNotFoundError:
             print("Arquivo JSON não encontrado.")
         except KeyError:
             print("Erro ao carregar dados do arquivo JSON.")
 
-    def get_current_path(self):
+    def get_current_path(self) -> None:
         path = []
         current_node = self.current_node
         while current_node:
@@ -199,30 +200,29 @@ class FileSystem:
             current_node = current_node.parent
         return "/".join(path)
     
-    def clear_terminal(self):
+    def clear_terminal(self) -> None:
         if os.name == 'posix': 
             os.system('clear')
         elif os.name == 'nt':
             os.system('cls')
         else:
             print("Comando de limpeza de terminal não suportado para este sistema operacional.")
-    def nano(self, file_name):
+            
+    def nano(self, file_name: str) -> None:
         target_file = self.find_child_node(self.current_node, file_name)
         if target_file:
             if not target_file.is_directory:
                 lines = target_file.content.split('\n') if target_file.content else []
-                print(f"Editing file '{file_name}'. Enter your text below. Type 'save' to save and exit.")
-                try:
-                    while True:
-                        for line in lines:
-                            print(line)
-                        print("-----")
-                        line = input()
-                        if line.strip() == 'save':
-                            break
-                        lines.append(line)
-                except EOFError:
-                    pass
+                print(f"Editando arquivo '{file_name}'. Para salvar, digite 'save' e aperte 'Enter'.")
+                
+                while True:
+                    for line in lines:
+                        print(line)
+                    print("-----")
+                    line = input()
+                    if line.strip() == 'save':
+                        break
+                    lines.append(line)
 
                 text = '\n'.join(lines)
                 target_file.content = text
@@ -237,15 +237,15 @@ class FileSystem:
         if target_file:
             if not target_file.is_directory:
                 if target_file.content:
-                    print(f"Contents of '{file_name}':\n{target_file.content}")
+                    print(f"Conteúdo de '{file_name}':\n{target_file.content}")
                 else:
-                    print(f"'{file_name}' is empty.")
+                    print(f"'{file_name}' está vazio.")
             else:
-                print(f"'{file_name}' is a directory. Cannot display contents.")
+                print(f"'{file_name}' é um diretorio. não é possivél ver o conteúdo.")
         else:
-            print(f"File '{file_name}' not found.")
+            print(f"File '{file_name}' não encontrado.")
     
-    def move(self, source_path, destination_path):
+    def move(self, source_path: str, destination_path: str) -> None:
         if destination_path == ".":
             destination_node = self.current_node
         else:
@@ -271,7 +271,7 @@ class FileSystem:
         destination_node.add_child(source_node)
         print(f"{source_path} movido para {destination_path}.")
 
-    def is_descendant(self, ancestor, descendant):
+    def is_descendant(self, ancestor: Node, descendant: Node) -> bool:
         current_node = descendant
         while current_node:
             if current_node == ancestor:
@@ -279,7 +279,7 @@ class FileSystem:
             current_node = current_node.parent
         return False
 
-    def find_node_by_path(self, path):
+    def find_node_by_path(self, path: str) -> Node:
         if path.startswith("/"):
             current_node = self.root
             path = path[1:]
@@ -306,61 +306,10 @@ class FileSystem:
                     return None
                 current_node = found_node
         return current_node
-            
-    def main(self):
-        try:
-            self.load_from_json()
-            while True:
-                current_path = self.get_current_path()
-                if current_path != "/":
-                    current_path = current_path[1:]
-                current_path = current_path.replace("/", os.path.sep)
-                
-                prompt = f"\033[32m{self.username}@{self.username}\033[m:\033[34m{current_path}\033[m$ "
 
-                command = input(prompt)
-
-                if command.startswith("cd"):
-                    directory_path = command.split(" ", 1)[1]
-                    self.cd(directory_path)
-                elif command == "ls":
-                    self.ls()
-                elif command.startswith("mkdir"):
-                    directory_name = command.split(" ", 1)[1]
-                    self.mkdir(directory_name)
-                elif command.startswith("touch"):
-                    file_name = command.split(" ", 1)[1]
-                    self.touch(file_name)
-                elif command.startswith("rm"):
-                    target = command.split(" ", 1)[1]
-                    if target.startswith("-r"):
-                        target_name = target.split(" ", 1)[1]
-                        self.rm(target_name)
-                    else:
-                        self.rm(target)
-                elif command == "tree":
-                    self.tree()
-                elif command == "clear" or command == 'cls':
-                    self.clear_terminal()
-                elif command.startswith("nano"):
-                    file_name = command.split(" ", 1)[1]
-                    self.nano(file_name)
-                elif command.startswith("cat"):
-                    file_name = command.split(" ", 1)[1]
-                    self.cat(file_name)
-                elif command.startswith("move"):
-                    source_name, destination_name = command.split(" ", 1)[1].split(" ", 1)
-                    self.move(source_name, destination_name)
-                elif command == "exit":
-                    self.save_to_json()
-                    print("Saindo do sistema de arquivos. Adeus!")
-                    break
-                else:
-                    print("Comando inválido. Tente novamente.")
-        except KeyboardInterrupt:
-            self.save_to_json()
-            print("\nSaindo do sistema de arquivos devido ao KeyboardInterrupt.")
-
-if __name__ == "__main__":
-    filesystem = FileSystem()
-    filesystem.main()
+    def pwd(self):
+        current_path = self.get_current_path()
+        if current_path == "/":
+            print("/")
+        else:
+            print(current_path[1:])
