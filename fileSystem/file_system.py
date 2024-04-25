@@ -78,9 +78,9 @@ class FileSystem:
         if self.current_node is not None:
             for child in self.current_node.children:
                 if child.is_directory:
-                    print("📁", child.name)  # Emoji de pasta
+                    print("📁", child.name)
                 else:
-                    print("📄", child.name)  # Emoji de arquivo
+                    print("📄", child.name)
         else:
             print("Diretório não encontrado ou não especificado.")
 
@@ -95,7 +95,7 @@ class FileSystem:
     def touch(self, file_name):
         new_file = Node(file_name)
         self.current_node.add_child(new_file)
-        self.save_to_json()  # Salvando a estrutura após a criação do arquivo
+        self.save_to_json()
         print(f"Arquivo '{file_name}' criado com sucesso.")
 
     def get_parent_directory(self, node):
